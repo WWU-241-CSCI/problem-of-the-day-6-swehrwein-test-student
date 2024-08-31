@@ -1,0 +1,186 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Does it run
+      id: does-it-run
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Does it run
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello hello hello hello
+        input: ''
+        expected-output: ''
+        comparison-method: exact
+        timeout: 10
+        max-score: 1
+    - name: Fail Whale
+      id: fail-whale
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Fail Whale
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello hello hello hello
+        input: ''
+        expected-output: |-
+          -1
+          -1
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: string oder int 1
+      id: string-oder-int-1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: string oder int 1
+        setup-command: ''
+        command: py .\Problem6complete.py 1 hello hello hello hello
+        input: ''
+        expected-output: |-
+          True
+          -1
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: string oder int 2
+      id: string-oder-int-2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: string oder int 2
+        setup-command: ''
+        command: py .\Problem6complete.py hello hello hello hello hello
+        input: ''
+        expected-output: |-
+          True
+          -1
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: Len0x 1
+      id: len0x-1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Len0x 1
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 8 hello hello hello
+        input: ''
+        expected-output: |-
+          -1
+          4
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: len0x 2
+      id: len0x-2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: len0x 2
+        setup-command: ''
+        command: ".\\Problem6complete.py 1.1 0 hello hello hello"
+        input: ''
+        expected-output: |-
+          -1
+          1
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: lenorder 1
+      id: lenorder-1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: lenorder 1
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello 1 3 hello
+        input: ''
+        expected-output: |-
+          -1
+          -1
+          3
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: lenorder 2
+      id: lenorder-2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: lenorder 2
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello 3 1 hello
+        input: ''
+        expected-output: |-
+          -1
+          -1
+          3
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: is it s
+      id: is-it-s
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: is it s
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello hello hello so
+        input: ''
+        expected-output: |-
+          -1
+          -1
+          -1
+          False
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: it is s
+      id: it-is-s
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: it is s
+        setup-command: ''
+        command: py .\Problem6complete.py 1.1 hello hello hello s
+        input: ''
+        expected-output: |-
+          -1
+          -1
+          -1
+          True
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        DOES-IT-RUN_RESULTS: "${{steps.does-it-run.outputs.result}}"
+        FAIL-WHALE_RESULTS: "${{steps.fail-whale.outputs.result}}"
+        STRING-ODER-INT-1_RESULTS: "${{steps.string-oder-int-1.outputs.result}}"
+        STRING-ODER-INT-2_RESULTS: "${{steps.string-oder-int-2.outputs.result}}"
+        LEN0X-1_RESULTS: "${{steps.len0x-1.outputs.result}}"
+        LEN0X-2_RESULTS: "${{steps.len0x-2.outputs.result}}"
+        LENORDER-1_RESULTS: "${{steps.lenorder-1.outputs.result}}"
+        LENORDER-2_RESULTS: "${{steps.lenorder-2.outputs.result}}"
+        IS-IT-S_RESULTS: "${{steps.is-it-s.outputs.result}}"
+        IT-IS-S_RESULTS: "${{steps.it-is-s.outputs.result}}"
+      with:
+        runners: does-it-run,fail-whale,string-oder-int-1,string-oder-int-2,len0x-1,len0x-2,lenorder-1,lenorder-2,is-it-s,it-is-s
